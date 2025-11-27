@@ -4,6 +4,7 @@ import mlflow
 import pandas as pd
 import sys
 from pathlib import Path
+from fastapi.middleware.cors import CORSMiddleware
 
 # Make project root importable
 ROOT = Path(__file__).resolve().parents[2]  # goes from models -> src -> project
@@ -45,6 +46,21 @@ def load_model():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,          # or ["*"] while developing
+    allow_credentials=True,
+    allow_methods=["*"],            # GET, POST, OPTIONS etc
+    allow_headers=["*"],
+)
+
 
 
 @app.post("/recommend", response_model=RecommendResponse)
