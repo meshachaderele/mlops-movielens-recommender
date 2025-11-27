@@ -6,7 +6,8 @@ ROOT = Path(__file__).resolve().parents[2]  # goes from models -> src -> project
 sys.path.append(str(ROOT))
 from mlflow_config import configure_mlflow
 
-from mlflow_config import configure_mlflow
+
+
 
 
 def main():

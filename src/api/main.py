@@ -1,0 +1,66 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+import mlflow
+import pandas as pd
+import sys
+from pathlib import Path
+
+# Make project root importable
+ROOT = Path(__file__).resolve().parents[2]  # goes from models -> src -> project
+sys.path.append(str(ROOT))
+from mlflow_config import configure_mlflow
+
+
+
+model_name = "movie-recommender"
+model_version = 1
+
+
+
+class RecommendRequest(BaseModel):
+    title: str
+    top_k: int = 5
+
+
+class RecommendResponse(BaseModel):
+    title: str
+    recommendations: list[str]
+
+
+app = FastAPI(
+    title="Movie Recommender API",
+    version="1.0.0",
+    description="Content based movie recommender served from MLflow Model Registry.",
+)
+
+
+@app.on_event("startup")
+def load_model():
+    configure_mlflow()
+    model_uri = f"models:/{model_name}/{model_version}"
+    app.state.model = mlflow.pyfunc.load_model(model_uri)
+    print(f"Loaded model from {model_uri}")
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+
+@app.post("/recommend", response_model=RecommendResponse)
+def recommend(req: RecommendRequest):
+    model = app.state.model
+
+    input_df = pd.DataFrame(
+        [
+            {"title": req.title, "top_k": req.top_k}
+        ]
+    )
+
+    preds = model.predict(input_df)
+    recommendations = preds[0] if len(preds) > 0 else []
+
+    return RecommendResponse(
+        title=req.title,
+        recommendations=recommendations,
+    )

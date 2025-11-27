@@ -11,9 +11,6 @@ from mlflow_config import configure_mlflow
 model_name = "movie-recommender"
 model_version = 1
 
-# Load the model from the Model Registry
-model_uri = f"models:/{model_name}/{model_version}"
-
 
 def main():
     configure_mlflow()
@@ -22,6 +19,7 @@ def main():
     model_uri = f"models:/{model_name}/{model_version}"
 
     model = mlflow.pyfunc.load_model(model_uri)
+    print(f"Loaded model from {model_uri}")
 
     # Prepare a small test input
     input_df = pd.DataFrame(

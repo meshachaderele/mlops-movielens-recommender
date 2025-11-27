@@ -10,7 +10,7 @@ import mlflow.pyfunc
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]  # goes from models -> src -> project
+ROOT = Path(__file__).resolve().parents[2]  # project root
 sys.path.append(str(ROOT))
 
 from mlflow_config import configure_mlflow
@@ -18,13 +18,10 @@ from mlflow_config import configure_mlflow
 
 class MovieRecommenderModel(mlflow.pyfunc.PythonModel):
     def load_context(self, context):
-        import pandas as pd
-        import joblib
-
         self.item_lookup = pd.read_csv(context.artifacts["item_lookup"])
         self.sim_matrix = joblib.load(context.artifacts["sim_matrix"])
 
-    def predict(self, context, model_input):
+    def predict(self, context, model_input: pd.DataFrame):
         """
         model_input: pandas DataFrame with a column 'title' and optional 'top_k'
         Returns: list of lists of recommended titles per input row.
@@ -71,9 +68,8 @@ def build_item_similarity(items, max_features=5000):
 
 def main():
     configure_mlflow()
-    experiment_name = "movielens-content-based"
-    model_name = "movie-recommender"
 
+    experiment_name = "movielens-content-based"
     mlflow.set_experiment(experiment_name)
 
     items = load_items()
@@ -97,10 +93,14 @@ def main():
             artifact_path="model",
             python_model=MovieRecommenderModel(),
             artifacts=artifacts,
-            registered_model_name=model_name,
         )
 
-        print(f"Logged model to run_id={run.info.run_id}")
+        run_id = run.info.run_id
+        print(f"Logged model to run_id={run_id}")
+
+        # Save run id for later use by the API
+        #with open("models/last_run_id.txt", "w") as f:
+           # f.write(run_id)
 
 
 if __name__ == "__main__":
