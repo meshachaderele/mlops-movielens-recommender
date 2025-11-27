@@ -1,0 +1,26 @@
+artifact_path: /Users/meshachaderele/Documents/ML Projects/mlops-movielens-recommender/mlruns/1/models/m-0214dd6effe24f13824d480187b8e7d3/artifacts
+flavors:
+  python_function:
+    artifacts:
+      item_lookup:
+        path: artifacts/item_lookup.csv
+        uri: models/item_lookup.csv
+      sim_matrix:
+        path: artifacts/sim_matrix.joblib
+        uri: models/sim_matrix.joblib
+    cloudpickle_version: 3.1.1
+    code: null
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pyfunc.model
+    python_model: python_model.pkl
+    python_version: 3.11.11
+    streamable: false
+mlflow_version: 3.3.2
+model_id: m-0214dd6effe24f13824d480187b8e7d3
+model_size_bytes: 45377764
+model_uuid: m-0214dd6effe24f13824d480187b8e7d3
+prompts: null
+run_id: 37bd4c03e8634caf9f08f500e6aa5ae2
+utc_time_created: '2025-11-27 08:26:53.068383'
