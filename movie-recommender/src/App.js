@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import "./App.css";
 
 const OMDB_API_KEY = process.env.REACT_APP_OMDB_API_KEY;
+const API_URL =
+  process.env.REACT_APP_RECOMMEND_API_URL ||
+  "http://127.0.0.1:8000/recommend";
 
 function App() {
   const [title, setTitle] = useState("");
@@ -26,7 +29,7 @@ function App() {
     setMovies([]);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/recommend", {
+      const response = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: title.trim(), top_k: safeTopK }),
